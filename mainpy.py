@@ -14,13 +14,8 @@ class MyForm(QDialog):
         self.ui.setupUi(self)
 
         self.ui.pushButtonZapisz.clicked.connect(self.saveButton)
+        self.ui.pushButtonPlik.clicked.connect(self.fileButton)
         self.show()
-
-
-    # def validatePESEL(self):
-    #     PESEL = self.ui.lineEditPESEL.text(),
-    #     return re.match(r'^[0-9]{11}',PESEL) is not None
-
 
 
     def clearInput(self):
@@ -29,14 +24,7 @@ class MyForm(QDialog):
         self.ui.lineEditTel.clear()
         self.ui.lineEditPESEL.clear()
 
-    def addPerson(self):
-        # Pesel=''
-        # if self.validatePESEL():
-        #      pesel = self.ui.lineEditPESEL.text()
-        # else:
-        #     mb = QMessageBox()
-        #     mb.setText('pesel jest zly')
-        #     mb.exec()
+    def people(self):
         person = {
             'name': self.ui.lineEditImie.text(),
             'lastName': self.ui.lineEditNazwisko.text(),
@@ -44,22 +32,40 @@ class MyForm(QDialog):
             'PESEL': self.ui.lineEditPESEL.text(),
             'umowa': self.ui.checkBoxUmowa.isChecked()
         }
-
-        employees = f"{person['name']} {person['lastName']} \ntel: {person['tel']} \nPesel: {person['PESEL']} \nUoP: {person['umowa']}"
+        return person
+    def fileSave(self):
         with open("./employees.txt", "a") as file:
-            file.write(f"imie i nazwisko: {employees}")
+            file.write(f"imie i nazwisko: {self.people()['name']} {self.people()['lastname']} {self.people()['tel']} {self.people()['PESEL']} {self.people()['umowa']}")
 
-        self.ui.listWidgetPracownicy.addItem(employees)
-        self.clearInput()
+    def addPerson(self):
+        person = {
+            'name': self.ui.lineEditImie.text(),
+            'lastName': self.ui.lineEditNazwisko.text(),
+            'tel': self.ui.lineEditTel.text(),
+            'PESEL': self.ui.lineEditPESEL.text(),
+            'umowa': self.ui.checkBoxUmowa.isChecked()
+        }
+        if re.match(r'^[0-9]{11}',person['PESEL']) is not None:
+            employees = f"{person['name']} {person['lastName']} \ntel: {person['tel']} \nPesel: {person['PESEL']} \nUoP: {person['umowa']}"
+            # with open("./employees.txt", "a") as file:
+            #     file.write(f"imie i nazwisko: {employees}")
 
+            self.ui.listWidgetPracownicy.addItem(employees)
+            self.clearInput()
+        else:
+            mb = QMessageBox()
+            mb.setText('pesel jest zly')
+            mb.exec()
 
     def saveButton(self):
         self.addPerson()
 
-
+    def fileButton(self):
+        self.fileSave()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyForm()
     window.show()
     sys.exit(app.exec())
+    print(self.people()['name'])
